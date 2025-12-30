@@ -4,6 +4,10 @@ lmp/
 # --- Security ---
 .env
 
+# --- rule of thumbs ---
+rule_of_thumb.txt
+
+
 # --- Python & Environment ---
 __pycache__/
 *.py[cod]
