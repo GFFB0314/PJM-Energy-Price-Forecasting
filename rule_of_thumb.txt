@@ -1,0 +1,24 @@
+
+This is a fantastic question. It hits the core of the difference between a "Notebook Data Scientist" and a 
+"Full-Stack Data Scientist."
+
+Why are we using SQL instead of just Pandas?
+
+You are right—Pandas read_csv() is faster right now for this small 1MB file. But you are building a portfolio to
+get hired. Here is why I (as a CDO) force my team to use SQL, and why you must do it here:
+
+- Resume "Grit": Everyone knows pd.read_csv(). Showing you can spin up a Postgres instance, define a schema, 
+  and ingest data proves you understand infrastructure. It checks the "Solid SQL" box on your technical 
+  requirements list.
+  
+- The "RAM Trap": Real energy data isn't 1MB. If you downloaded all PJM nodes for 5 years, it would be 50GB+. 
+  Pandas tries to load that entirely into RAM and crashes your laptop. SQL stores it on the hard drive and only  
+  pulls the specific rows you ask for.
+
+- Feature Engineering Logic: In the real world (Snowflake, BigQuery, Databricks), we don't pull raw data into 
+  Python to clean it. We use SQL to clean it in the database and only pull the clean dataset into Python for 
+  training. This is called ELT (Extract, Load, Transform).
+
+- Persistence: If you close VS Code, your Pandas dataframe vanishes. A database keeps the data forever.
+
+NB: The Rule of Thumb: Use SQL to get and clean the data. Use Pandas and Sklearn to analyze and model the data.

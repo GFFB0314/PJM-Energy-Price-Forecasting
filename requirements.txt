@@ -1,0 +1,22 @@
+# Data Manipulation
+pandas
+numpy
+
+# Database Connectivity (The Bridge)
+sqlalchemy      # ORM for writing to DB
+psycopg2-binary # The driver for PostgreSQL
+
+# API & Web Scraping
+requests        # To get OpenMeteo weather data
+
+# Modeling & Math
+scikit-learn    # For Polynomial Regression & Metrics
+statsmodels     # Optional: Good for detailed statistical summaries
+
+# Visualization
+matplotlib
+seaborn
+
+# Utilities
+python-dotenv   # To hide your database passwords (security best practice)
+jupyter         # To run the notebooks

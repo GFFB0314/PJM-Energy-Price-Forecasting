@@ -1,0 +1,24 @@
+# Ignore virtual environment
+lmp/
+
+# --- Security ---
+.env
+
+# --- Python & Environment ---
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+env/
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints/
+
+# --- Data ---
+# Professional standard: Code goes to GitHub, Data stays local (or S3).
+# We ignore the data folder so other people don't download your messy CSVs.
+data/
+
+# --- IDE Settings ---
+.vscode/
+.idea/
