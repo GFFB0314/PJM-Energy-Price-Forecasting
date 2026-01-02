@@ -63,7 +63,7 @@ SELECT
     
     -- CRITICAL: Why "AND 1 PRECEDING"? Why not "CURRENT ROW"?
     -- If we include the CURRENT ROW, we are using the answer to predict the answer.
-    -- That is called "Data Leakage." It gives you 100% accuracy in training 
+    -- That is called "Data Leakage." It gives us 100% accuracy in training 
     -- but fails in the real world. We MUST stop looking 1 hour ago.
 
 FROM pjm_market.raw_lmp
