@@ -20,3 +20,6 @@ seaborn
 # Utilities
 python-dotenv   # To hide your database passwords (security best practice)
 jupyter         # To run the notebooks
+
+# Unit Testing
+pytest          # To run unit tests  
