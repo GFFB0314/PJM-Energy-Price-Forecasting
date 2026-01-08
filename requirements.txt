@@ -10,7 +10,7 @@ psycopg2-binary==2.9.11
 requests==2.32.3
 
 # Modeling & Math
-scikit-learn==1.6.1
+scikit-learn==1.8.0
 statsmodels==0.14.4
 
 # Visualization
