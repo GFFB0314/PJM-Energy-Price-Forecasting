@@ -25,4 +25,4 @@ data/
 
 # --- IDE Settings ---
 .vscode/
-.idea/
+.idea/*.pkl
