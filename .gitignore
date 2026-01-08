@@ -25,4 +25,7 @@ data/
 
 # --- IDE Settings ---
 .vscode/
-.idea/*.pkl
+.idea/
+
+# --- Model Files (Large Binaries) ---
+*.pkl

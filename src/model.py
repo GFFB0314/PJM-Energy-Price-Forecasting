@@ -286,7 +286,7 @@ def train_and_evaluate(
         )
 
     # Find the best model based on CV Score
-    logger.info("Printing the Model Leaderboard sorted by CV_RMSE:")
+    logger.info("Printing the Model Leaderboard sorted by TEST_RMSE:")
     leaderb_df: pd.DataFrame = pd.DataFrame(results).sort_values(
         "TEST_RMSE", ascending=True
     )
@@ -348,7 +348,7 @@ def run_pnl_simulation(model, X_test, y_test):
     logger.info("PnL RESULTS:")
     logger.info("Total Potential Profit:       $%.2f", total_potential)
     logger.info("Total Realized Profit:         $%.2f", total_realized)
-    logger.info("Efficiency:                         %.2f%%", efficiency)
+    logger.info("Efficiency:                         %.1f%%", efficiency)
     logger.info("-" * 30)
 
 
