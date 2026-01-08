@@ -29,3 +29,7 @@ data/
 
 # --- Model Files (Large Binaries) ---
 *.pkl
+
+
+# --- Final Project Review ---
+FINAL_REVIEW.md
