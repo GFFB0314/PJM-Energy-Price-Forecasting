@@ -1,5 +1,9 @@
 # Intelligent Energy Arbitrage Engine ⚡
 
+🔗 **[Live API Demo](https://pjm-energy-api.onrender.com/docs)** | 📊 **[GitHub Repository](https://github.com/GFFB0314/PJM-Energy-Price-Forecasting)**
+
+> **Note:** The live API is hosted on a free instance. Please allow **50+ seconds** for the server to wake up if it has been inactive.
+
 Welcome to the **Intelligent Energy Arbitrage Engine** – a production-grade data science system designed to optimize battery storage revenue in the PJM energy market. This project demonstrates the end-to-end lifecycle of a machine learning application, from raw data ingestion to financial impact analysis, moving beyond simple metrics to solve a real-world business problem.
 
 ## Table of Contents
