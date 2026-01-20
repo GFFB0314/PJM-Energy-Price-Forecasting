@@ -3,6 +3,8 @@
 import logging
 import os
 from typing import Dict, Any
+from sqlalchemy.engine.base import Engine 
+from sqlalchemy import create_engine
 
 import pandas as pd
 import requests
@@ -22,12 +24,12 @@ logger = logging.getLogger(__name__)
 
 
 def fetch_weather_data(
-    url: str = WEATHER_API_URL, params: Dict[str, Any] = None
+    url: str = WEATHER_API_URL, params: Dict[str, Any] = {}
 ) -> pd.DataFrame:
     """
     Fetches historical weather data from Open-Meteo API.
     """
-    if params is None:
+    if not params:
         params = WEATHER_API_PARAMS
     logger.info("Fetching weather data from %s...", url)
     try:
@@ -62,9 +64,10 @@ def fetch_price_data(connection_string: str = DB_CONNECTION_STRING) -> pd.DataFr
     """
     logger.info("Connecting to Database to fetch price data...")
     query = "SELECT * FROM pjm_market.features_v"
+    engine: Engine = create_engine(DB_CONNECTION_STRING)
 
     try:
-        df_prices = pd.read_sql(query, con=connection_string)
+        df_prices = pd.read_sql(query, engine)
 
         # Ensure timestamps are datetime
         if "datetime_beginning_ept" in df_prices.columns:
