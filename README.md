@@ -124,7 +124,7 @@ You can interact with the project via Jupyter Notebooks for exploration or CLI f
 
 *   **Notebooks (`notebooks/`):**
     *   `01_data_extraction.ipynb`: API extraction & SQL Loading.
-    *   `02_eda_and_sql.ipynb`: EDA & SQL Feature Engineering visualization.
+    *   `02_eda_and_sql.ipynb`: Exploratory Data Analysis.
     *   `03_modeling.ipynb`: Pipeline training and PnL backtesting.
 
 *   **Command Line Interface:**
