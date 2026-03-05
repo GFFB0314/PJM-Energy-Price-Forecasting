@@ -3,7 +3,7 @@
 import logging
 import os
 from typing import Dict, Any
-from sqlalchemy.engine.base import Engine 
+from sqlalchemy.engine.base import Engine
 from sqlalchemy import create_engine
 
 import pandas as pd
@@ -13,14 +13,13 @@ from .config import (
     DB_CONNECTION_STRING,
     WEATHER_API_URL,
     WEATHER_API_PARAMS,
-    PROCESSED_DATA_PATH,
+    INTERIM_DATA_PATH,
 )
 
+from .logging_utils import get_logger
+
 # Setup logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def fetch_weather_data(
@@ -101,9 +100,9 @@ def merge_data(df_prices: pd.DataFrame, df_weather: pd.DataFrame) -> pd.DataFram
     return df_merged
 
 
-def save_data(df: pd.DataFrame, output_path: str = PROCESSED_DATA_PATH) -> None:
+def save_data(df: pd.DataFrame, output_path: str = INTERIM_DATA_PATH) -> None:
     """
-    Saves the processed dataframe to a CSV file.
+    Saves the interim dataframe to a CSV file.
     """
     try:
         os.makedirs(os.path.dirname(output_path), exist_ok=True)

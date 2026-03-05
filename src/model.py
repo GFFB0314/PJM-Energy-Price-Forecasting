@@ -4,38 +4,31 @@ This module handles loading processed data, feature engineering, pipeline constr
 grid search training, and financial impact analysis.
 """
 
-import logging
 from typing import Any, Dict, Tuple
 
 import joblib
 import pandas as pd
 
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import (
-    BaggingRegressor,
-    GradientBoostingRegressor,
-    RandomForestRegressor,
-)
-from sklearn.linear_model import Lasso, LinearRegression, Ridge
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import r2_score as R2
 from sklearn.metrics import root_mean_squared_error as RMSE
 from sklearn.model_selection import (
     GridSearchCV,
     TimeSeriesSplit,
-    cross_val_score,
     train_test_split,
 )
-from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import PolynomialFeatures, RobustScaler
 
-from .config import PROCESSED_DATA_PATH_TRAIN
+
+from .config import PROCESSED_DATA_PATH
+from .logging_utils import get_logger
 
 # Setup logging
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
-def load_processed_data(path: str = PROCESSED_DATA_PATH_TRAIN) -> pd.DataFrame:
+def load_processed_data(path: str = PROCESSED_DATA_PATH) -> pd.DataFrame:
     """Loads the required training CSV data."""
     logger.info("Loading data from %s...", path)
     df = pd.read_csv(path)
@@ -86,9 +79,9 @@ def prepare_features(
     return (X_train, X_test, y_train, y_test)
 
 
-def get_pipelines() -> Tuple[Dict[str, Pipeline], Dict[str, Any]]:
+def get_pipeline() -> Tuple[Pipeline, Dict[str, Any]]:
     """
-    Defines the Pipelines and Param Grids.
+    Defines the Pipeline and Param Grid for Gradient Boosting.
     """
     weather_cols: list[str] = ["temp_c", "wind_kph", "solar_radiation"]
     other_cols: list[str] = [
@@ -101,200 +94,86 @@ def get_pipelines() -> Tuple[Dict[str, Pipeline], Dict[str, Any]]:
     ]
 
     # Preprocessors
-    weather_poly_scaled = Pipeline(
-        steps=[
-            ("poly", PolynomialFeatures(degree=2, include_bias=False)),
-            ("scaler", RobustScaler()),
-        ]
-    )
-
-    other_scaled = Pipeline(steps=[("scaler", RobustScaler())])
-
-    processor_scaled = ColumnTransformer(
-        transformers=[
-            ("weather_columns", weather_poly_scaled, weather_cols),
-            ("other_columns", other_scaled, other_cols),
-        ],
-        remainder="drop",
-    )
-
     processor_trees = ColumnTransformer(
         transformers=[("all_columns", "passthrough", weather_cols + other_cols)],
         remainder="drop",
     )
 
-    # Pipelines
-    pipelines: Dict[str, Pipeline] = {
-        "LinearRegression": Pipeline(
-            steps=[("process", processor_scaled), ("lr", LinearRegression())]
-        ),
-        "RidgeRegression": Pipeline(
-            steps=[("process", processor_scaled), ("ridge", Ridge())]
-        ),
-        "LassoRegression": Pipeline(
-            steps=[("process", processor_scaled), ("lasso", Lasso())]
-        ),
-        "KNN": Pipeline(
-            steps=[("process", processor_scaled), ("knn", KNeighborsRegressor())]
-        ),
-        "BaggingRegressor": Pipeline(
-            steps=[
-                ("process", processor_trees),
-                ("br", BaggingRegressor(random_state=42)),
-            ]
-        ),
-        "RandomForestRegressor": Pipeline(
-            steps=[
-                ("process", processor_trees),
-                ("rfr", RandomForestRegressor(random_state=42)),
-            ]
-        ),
-        "GradientBoostingRegressor": Pipeline(
-            steps=[
-                ("process", processor_trees),
-                ("gbr", GradientBoostingRegressor(random_state=42)),
-            ]
-        ),
-    }
+    # Pipeline
+    pipeline = Pipeline(
+        steps=[
+            ("process", processor_trees),
+            ("gbr", GradientBoostingRegressor(random_state=42)),
+        ]
+    )
 
     # Param Grid
     param_grid: Dict[str, Any] = {
-        "Ridge": {"alpha": [0.01, 0.1, 1.0, 10.0]},
-        "Lasso": {"alpha": [0.001, 0.01, 0.1, 1.0]},
-        "KNN": {"n_neighbors": [3, 5, 7, 9], "weights": ["uniform", "distance"]},
-        "RandomForestRegressor": {
-            "n_estimators": [100, 200],
-            "max_depth": [None, 10, 20],
-            "max_features": ["sqrt", "log2"],
-        },
-        "BaggingRegressor": {
-            "n_estimators": [
-                10,
-                50,
-                100,
-            ],  # Uses Decision Tree as base estimator by default
-            "max_samples": [0.6, 0.8, 1.0],
-        },
-        "GradientBoostingRegressor": {
-            "n_estimators": [100, 200],
-            "learning_rate": [0.05, 0.1],
-            "max_depth": [2, 3, 4],
-        },
+        "gbr__n_estimators": [100, 200],
+        "gbr__learning_rate": [0.05, 0.1],
+        "gbr__max_depth": [2, 3, 4],
     }
 
-    return (pipelines, param_grid)
+    return (pipeline, param_grid)
 
 
 def train_and_evaluate(
     X_train, y_train, X_test, y_test
 ) -> Tuple[Pipeline, pd.DataFrame]:
     """
-    Runs the GridSearch Training loop.
+    Runs the GridSearch Training logic.
     """
-    pipelines, param_grid = get_pipelines()
+    pipeline, param_grid = get_pipeline()
 
     # CV Strategy (The 60 splits logic)
     tscv = TimeSeriesSplit(
         n_splits=60, test_size=24
     )  # Forecast horizon of 24 hours over a period of 60 days (1440 hours)
 
-    results: list[dict] = []
-    estimators: Dict[str, Pipeline] = {}
+    logger.info("Starting Training for GradientBoostingRegressor...")
 
-    logger.info("Starting Training loop on %d models...", len(pipelines))
-
-    for name, pipeline in pipelines.items():
-        logger.info("Training (Fitting) %s...", name)
-
-        # logic to map params
-        search_params: dict = {}
-        step_name: str = ""
-
-        if "RidgeRegression" in name:
-            grid_key, step_name = "Ridge", "ridge"
-        elif "LassoRegression" in name:
-            grid_key, step_name = "Lasso", "lasso"
-        elif "KNN" in name:
-            grid_key, step_name = "KNN", "knn"
-        elif "RandomForestRegressor" in name:
-            grid_key, step_name = "RandomForestRegressor", "rfr"
-        elif "BaggingRegressor" in name:
-            grid_key, step_name = "BaggingRegressor", "br"
-        elif "GradientBoostingRegressor" in name:
-            grid_key, step_name = "GradientBoostingRegressor", "gbr"
-        else:
-            grid_key = None  # No Hyperparameter tunning for LinearRegression
-
-        if grid_key and grid_key in param_grid:
-            for param, values in param_grid[grid_key].items():
-                search_params[f"{step_name}__{param}"] = values
-
-        best_score: float = 0.0
-        cv_score: float = 0.0
-
-        if search_params:
-            model = GridSearchCV(
-                pipeline,
-                param_grid=search_params,
-                cv=tscv,
-                scoring="neg_root_mean_squared_error",
-                n_jobs=-1,
-            )
-
-            # Fitting the model on the entire training data
-            model.fit(X_train, y_train)
-            final_model: Pipeline = (
-                model.best_estimator_
-            )  # Best pipeline with best hyperparameters
-            best_score = round(-model.best_score_, 4)  # Best CV score (lowest RMSE)
-            best_params = model.best_params_  # Best hyperparameters
-        else:
-            cv_scores = cross_val_score(
-                pipeline,
-                X_train,
-                y_train,
-                cv=tscv,
-                scoring="neg_root_mean_squared_error",
-            )
-
-            cv_score = round(-cv_scores.mean(), 4)  # AVG_RMSE
-            best_params = "Default"
-
-            # Fitting the model on the entire training data
-            pipeline.fit(X_train, y_train)
-            final_model: Pipeline = pipeline
-
-        y_pred = final_model.predict(X_test)
-        test_rmse = round(RMSE(y_test, y_pred), 4)
-        test_r2 = round(R2(y_test, y_pred), 4)
-
-        results.append(
-            {
-                "Model": name,
-                "CV_RMSE": best_score if search_params else cv_score,
-                "TEST_RMSE": test_rmse,
-                "R2_TEST": test_r2,
-                "Best Params": best_params,
-            }
-        )
-        estimators[name] = final_model
-        logger.info(
-            "  -> %s | CV_RMSE: %.4f | TEST_RMSE: %.4f",
-            name,
-            results[-1]["CV_RMSE"],
-            results[-1]["TEST_RMSE"],
-        )
-
-    # Find the best model based on CV Score
-    logger.info("Printing the Model Leaderboard sorted by TEST_RMSE:")
-    leaderb_df: pd.DataFrame = pd.DataFrame(results).sort_values(
-        "TEST_RMSE", ascending=True
+    model = GridSearchCV(
+        pipeline,
+        param_grid=param_grid,
+        cv=tscv,
+        scoring="neg_root_mean_squared_error",
+        n_jobs=-1,
     )
-    best_model_name: str = leaderb_df.iloc[0]["Model"]
-    best_model_obj: Pipeline = estimators[best_model_name]
 
-    logger.info("Winner: %s", best_model_name)
-    return (best_model_obj, leaderb_df)
+    # Fitting the model on the entire training data
+    model.fit(X_train, y_train)
+    final_model: Pipeline = (
+        model.best_estimator_
+    )  # Best pipeline with best hyperparameters
+    best_score = round(-model.best_score_, 4)  # Best CV score (lowest RMSE)
+    best_params = model.best_params_  # Best hyperparameters
+
+    y_pred = final_model.predict(X_test)
+    test_rmse = round(RMSE(y_test, y_pred), 4)
+    test_r2 = round(R2(y_test, y_pred), 4)
+
+    results = []
+    results.append(
+        {
+            "Model": "GradientBoostingRegressor",
+            "CV_RMSE": best_score,
+            "TEST_RMSE": test_rmse,
+            "R2_TEST": test_r2,
+            "Best Params": best_params,
+        }
+    )
+
+    logger.info(
+        "  -> GradientBoostingRegressor | CV_RMSE: %.4f | TEST_RMSE: %.4f",
+        best_score,
+        test_rmse,
+    )
+
+    # Create the leaderboard dataframe
+    leaderb_df: pd.DataFrame = pd.DataFrame(results)
+
+    logger.info("Winner: GradientBoostingRegressor")
+    return (final_model, leaderb_df)
 
 
 def run_pnl_simulation(model, X_test, y_test):
@@ -338,7 +217,7 @@ def run_pnl_simulation(model, X_test, y_test):
             [profit_perfect, profit_model], index=["Perfect_Profit", "Model_Profit"]
         )
 
-    daily_profits = df_sim.groupby("date").apply(simulate_day)
+    daily_profits = df_sim.groupby("date").apply(simulate_day, include_groups=False)
 
     total_realized = daily_profits["Model_Profit"].sum()  # Model Proft
     total_potential = daily_profits["Perfect_Profit"].sum()  # Perfect Profit

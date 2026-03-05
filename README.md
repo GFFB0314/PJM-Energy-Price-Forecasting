@@ -77,7 +77,7 @@ This project leverages a modern Python Data Science stack.
 *   🐼 **Pandas & NumPy:** For high-performance data manipulation and vectorization.
 *   📊 **Matplotlib & Seaborn:** For visualizing EDA, correlation heatmaps, and price volatility.
 *   🤖 **Scikit-Learn:** For machine learning pipelines, regression models, and cross-validation.
-*   🗄️ **SQLAlchemy & Psycopg2:** For robust database interaction.
+*   🗄️ **SQLAlchemy:** For robust database interaction.
 *   🧪 **Pytest:** For unit testing and verifying pipeline integrity.
 *   ☁️ **Open-Meteo API:** For historical weather data ingestion.
 
@@ -124,8 +124,9 @@ You can interact with the project via Jupyter Notebooks for exploration or CLI f
 
 *   **Notebooks (`notebooks/`):**
     *   `01_data_extraction.ipynb`: API extraction & SQL Loading.
-    *   `02_eda_and_sql.ipynb`: EDA & SQL Feature Engineering visualization.
+    *   `02_eda_and_sql.ipynb`: Exploratory Data Analysis (EDA)
     *   `03_modeling.ipynb`: Pipeline training and PnL backtesting.
+    *   `04_summary_&_recommendations.ipynb`: Executive Summary
 
 *   **Command Line Interface:**
     To run the full ETL or Training pipeline from the terminal:

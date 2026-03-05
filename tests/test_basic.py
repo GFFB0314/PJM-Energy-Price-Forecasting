@@ -3,19 +3,21 @@
 import numpy as np
 import pandas as pd
 
-from src.model import get_pipelines, prepare_features
+from src.model import get_pipeline, prepare_features
 
 
 def test_pipeline_structure():
-    """Ensure pipelines dict contains the expected models."""
-    pipelines, _ = get_pipelines()
-    expected_models = [
-        "LinearRegression",
-        "RandomForestRegressor",
-        "GradientBoostingRegressor",
-    ]
-    for model in expected_models:
-        assert model in pipelines, f"{model} is missing from pipelines"
+    """Ensure pipeline is GradientBoostingRegressor and contains expected steps."""
+    pipeline, param_grid = get_pipeline()
+
+    # Check that 'gbr' step exists in the pipeline
+    assert "gbr" in pipeline.named_steps
+    assert type(pipeline.named_steps["gbr"]).__name__ == "GradientBoostingRegressor"
+
+    # Check that param_grid contains GBR specific hyperparams
+    assert "gbr__n_estimators" in param_grid
+    assert "gbr__learning_rate" in param_grid
+    assert "gbr__max_depth" in param_grid
 
 
 def test_feature_preparation():

@@ -1,6 +1,9 @@
 # Ignore virtual environment
 lmp/
 
+# Ignore personal files
+LINKEDIN_POST.txt
+
 # --- Security ---
 .env
 
@@ -20,7 +23,7 @@ env/
 
 # --- Data ---
 # Professional standard: Code goes to GitHub, Data stays local (or S3).
-# We ignore the data folder so other people don't download your messy CSVs.
+# Ignoring the data folder so other people don't download our messy CSVs.
 data/
 
 # --- IDE Settings ---

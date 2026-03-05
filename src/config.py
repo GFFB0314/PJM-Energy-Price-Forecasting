@@ -32,5 +32,5 @@ WEATHER_API_PARAMS: dict = {
 DATA_DIR: str = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data"
 )
-PROCESSED_DATA_PATH: str = os.path.join(DATA_DIR, "processed", "merged_data.csv")
-PROCESSED_DATA_PATH_TRAIN: str = os.path.join(DATA_DIR, "processed", "trained_data.csv")
+INTERIM_DATA_PATH: str = os.path.join(DATA_DIR, "interim", "merged_data.csv")
+PROCESSED_DATA_PATH: str = os.path.join(DATA_DIR, "processed", "trained_data.csv")
