@@ -170,7 +170,7 @@ Contributions are what make the open-source community such an amazing place to l
 For any questions, issues, or suggestions, please feel free to contact:
 - Email: gbetnkom.bechir@gmail.com
 - LinkedIn: [Fares Fahim Bechir Gbetnkom](www.linkedin.com/in/fares-fahim-bechir-gbetnkom-386a782a6)
-- GitHub Issues: [Project Issues](https://github.com/GFFB0314/GB_Interpreter/issues)
+- GitHub Issues: [Project Issues](https://github.com/GFFB0314/PJM-Energy-Price-Forecasting/issues)
 
 ---
 
