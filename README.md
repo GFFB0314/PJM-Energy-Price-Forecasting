@@ -146,7 +146,7 @@ You can interact with the project via Jupyter Notebooks for exploration or CLI f
 ## Results & Impact 📊
 
 **Real metrics validated on actual data:**
-- CV RMSE: 15.92 (GradientBoosting via TimeSeriesSplit)
+- CV RMSE: 16.3 (GradientBoosting via TimeSeriesSplit)
 - Baseline comparison: 5.8% better than Linear Regression (16.72)
 
 **Simulated backtest on Holdout Set (Q4 2024):**
