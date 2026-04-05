@@ -1,6 +1,6 @@
 # Intelligent Energy Arbitrage Engine ⚡
 
-🔗 **[Live API Demo](https://energy-price-api-o8mv.onrender.com/docs)** | 📊 **[GitHub Repository](https://github.com/GFFB0314/PJM-Energy-Price-Forecasting)**
+🔗 **[Live API Demo](https://energy-price-api-o8mv.onrender.com/docs)**
 
 > **Note:** The live API is hosted on a free instance. Please allow **50+ seconds** for the server to wake up if it has been inactive.
 
