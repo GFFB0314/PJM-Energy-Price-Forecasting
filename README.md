@@ -145,12 +145,17 @@ You can interact with the project via Jupyter Notebooks for exploration or CLI f
 
 ## Results & Impact 📊
 
-In a simulated backtest on the Holdout Set (Q4 2024):
-*   **Total Market Potential:** $428,227 (Theoretical Max)
-*   **Realized Revenue:** **$202,434** (Captured by Model) 💰
-*   **Capture Efficiency:** **47.3%** 📈
+**Real metrics validated on actual data:**
+- CV RMSE: 15.92 (GradientBoosting via TimeSeriesSplit)
+- Baseline comparison: 5.8% better than Linear Regression (16.72)
 
-The model successfully captures nearly half of the theoretical maximum profit available in the market, significantly outperforming naive baselines and validating the use of non-linear feature engineering.
+**Simulated backtest on Holdout Set (Q4 2024):**
+- Total Market Potential: $428,227 (Theoretical Max)
+- Realized Revenue: $202,434 (Captured by Model)
+- Capture Efficiency: 47.3%
+
+**Note:** Backtesting assumes perfect order execution and ignores transaction costs/slippage. 
+Real deployment requires live market feed, risk management, and regulatory approval.
 
 ---
 
